@@ -72,11 +72,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 /////////////////////////////////////////////////////////////////////////////////
 
+#define Wire1 Wire /* GSW Try to fix Wired library on ESP8266 */
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <Pixy.h>
+
+
+const int sclPin = D1;
+const int sdaPin = D2;
 
 Pixy CmuCam5; // cmu cam 5 support as an SPI device
 
@@ -1262,23 +1267,23 @@ void setup() {
   // make a characteristic flashing pattern to indicate the robot code is loaded (as opposed to the gamepad)
   // There will be a brief flash after hitting the RESET button, then a long flash followed by a short flash.
   // The gamepaid is brief flash on reset, short flash, long flash.
-  pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
+  pinMode(D4, OUTPUT);
+  digitalWrite(D4, HIGH);
   delay(400);
-  digitalWrite(13, LOW);
+  digitalWrite(D4, LOW);
   delay(200);
-  digitalWrite(13, HIGH);
+  digitalWrite(D4, HIGH);
   delay(200);
-  digitalWrite(13,LOW);
+  digitalWrite(D4,LOW);
   ///////////////////// end of indicator flashing
-  pinMode(A1, OUTPUT);
-  pinMode(A2, OUTPUT);
+//  pinMode(A1, OUTPUT);         /* GSW - Use alternate method for pot */
+//  pinMode(A2, OUTPUT);         /* GSW - Use alternate method for pot */
   
   digitalWrite(13, LOW);
   
   // A1 and A2 provide power to the potentiometer
-  digitalWrite(A1, HIGH);
-  digitalWrite(A2, LOW);
+//  digitalWrite(A1, HIGH);        /* GSW Alternative method needed for POT */
+//  digitalWrite(A2, LOW);         /* GSW Alternative method needed for POT */
 
   delay(500); // give hardware a chance to come up and stabalize
   Serial.begin(9600);
@@ -1364,9 +1369,9 @@ sendSensorData() {
   //checksum += bluewriteword(testword);
   //checksum += bluewriteword(testword);
   /////////////////////////////////////////////////////////////////
-  checksum += bluewriteword(analogRead(A3));
-  checksum += bluewriteword(analogRead(A6));
-  checksum += bluewriteword(analogRead(A7));
+  //checksum += bluewriteword(analogRead(A3));  /* GSW No Analog Read */
+  //checksum += bluewriteword(analogRead(A6));  /* GSW No Analog Read */
+  //checksum += bluewriteword(analogRead(A7));  /* GSW No Analog Read */
   checksum += bluewriteword(ultra);
   if (blocks > 0) {
     //checksum += bluewriteword(CmuCam5.blocks[0].signature);
@@ -1692,9 +1697,9 @@ void loop() {
     if (millis() > ReportTime) {
           ReportTime = millis() + 1000;
           Serial.println("Stand, Sensors:");
-          Serial.print(" A3="); Serial.print(analogRead(A3));
-          Serial.print(" A6="); Serial.print(analogRead(A6));
-          Serial.print(" A7="); Serial.print(analogRead(A7));
+         // Serial.print(" A3="); Serial.print(analogRead(A3));
+         // Serial.print(" A6="); Serial.print(analogRead(A6));
+         // Serial.print(" A7="); Serial.print(analogRead(A7));
           Serial.print(" Dist="); Serial.print(readUltrasonic());
           Serial.println("");
     }
